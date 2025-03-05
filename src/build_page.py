@@ -18,19 +18,32 @@ def extract_title(markdown):
             return line[2:]
     raise ValueError("No title found in markdown")
 
-def generate_page(from_path, template_path, dest_path):
-    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
-    with open(from_path, "r") as f:
-        markdown = f.read()
-    with open(template_path, "r") as f:
-        template = f.read()
-    content = markdown_to_html_node(markdown).to_html()
-    title = extract_title(markdown)
-    html = template.replace("{{ Title }}", title).replace("{{ Content }}", content)
-    with open(dest_path, "w") as f:
-        f.write(html)
+def generate_page(from_path, template_path, dest_path, basepath):
+    print(f" * {from_path} {template_path} -> {dest_path}")
+    from_file = open(from_path, "r")
+    markdown_content = from_file.read()
+    from_file.close()
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    template_file = open(template_path, "r")
+    template = template_file.read()
+    template_file.close()
+
+    node = markdown_to_html_node(markdown_content)
+    html = node.to_html()
+
+    title = extract_title(markdown_content)
+    template = template.replace("{{ Title }}", title)
+    template = template.replace("{{ Content }}", html)
+    template = template.replace('href="/', 'href="' + basepath)
+    template = template.replace('src="/', 'src="' + basepath)
+
+    dest_dir_path = os.path.dirname(dest_path)
+    if dest_dir_path != "":
+        os.makedirs(dest_dir_path, exist_ok=True)
+    to_file = open(dest_path, "w")
+    to_file.write(template)
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     for root, dirs, files in os.walk(dir_path_content):
         for file in files:
             if file.endswith(".md"):
@@ -43,4 +56,4 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
                 os.makedirs(os.path.dirname(dest_path), exist_ok=True)
                 
                 # Generate the page
-                generate_page(from_path, template_path, dest_path)
+                generate_page(from_path, template_path, dest_path, basepath)
