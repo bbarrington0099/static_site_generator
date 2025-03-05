@@ -3,13 +3,10 @@ import shutil
 
 from block_parser import markdown_to_html_node
 
-def copy_static_to_public():
-    static_dir = "static"
-    public_dir = "public"
-
-    shutil.rmtree(public_dir, ignore_errors=True)
-    shutil.os.mkdir(public_dir)
-    shutil.copytree(static_dir, public_dir, dirs_exist_ok=True)
+def copy_static_to_public(src_dir, dest_dir):
+    shutil.rmtree(dest_dir, ignore_errors=True)
+    shutil.os.mkdir(dest_dir)
+    shutil.copytree(src_dir, dest_dir, dirs_exist_ok=True)
 
 def extract_title(markdown):
     lines = markdown.split("\n")

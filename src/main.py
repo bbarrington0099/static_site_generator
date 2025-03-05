@@ -12,7 +12,7 @@ def main():
     basepath = default_basepath
     if len(sys.argv) > 1:
         basepath = sys.argv[1]
-    copy_static_to_public()
+    copy_static_to_public(dir_path_static, dir_path_public)
     generate_pages_recursive(dir_path_content, template_path, dir_path_public, basepath)
 
 if __name__ == "__main__":
